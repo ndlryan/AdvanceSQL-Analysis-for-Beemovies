@@ -1,11 +1,11 @@
-# Bee Movies DBT - Advanced SQL
+# Bee Movies DTB - Advanced SQL
 
 [![SQL](https://img.shields.io/badge/Built%20With-SQL-blue)](https://en.wikipedia.org/wiki/SQL) 
 [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
 
 ---
 
-## DBT Overview
+## DTB Overview
 
 SQL Movie Database Analysis 🎬
 
@@ -31,17 +31,17 @@ You have to use SQL to analyse the given data and give recommendations to Bee Mo
 
 ## Database setup
 
-### 📝 Set-up your DBT
+### 📝 Set-up your DTB
   - You can run this script to load the data on the MySQL / PostgreSQL workbench
   - And start with the querying project on the database
 [Get Data!](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/import-data.sql)
 
-### ✨ Know your DBT
+### ✨ Know your DTB
   - This file contains the ERD diagram to help you understand the relationship between those tables
   - Study the ERD closely so that you get an initial understanding of the relations and how data from different tables can be joined.
 [Get ERD!](https://github.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/raw/main/ERD.xlsx)
 
-### 🔎 Analyze Your DBT
+### 🔎 Analyze Your DTB
   - For your convenience, the entire analytics process has been divided into four segments
   - The questions in each segment with business objectives are written in the script given below.
 [Get Question!](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/bee-movies-question.sql)
