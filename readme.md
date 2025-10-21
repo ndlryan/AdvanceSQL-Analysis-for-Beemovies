@@ -28,7 +28,13 @@ This repository contains the complete SQL script with 25+ queries used to analyz
 
 ## Database setup
 
-✨ You can run this script to load the data on the MySQL / PosgreSQL workbench and start with the querying exercises on the database: 
+Set-up your database
+
+```Markdown
+✨ You can run this script to load the data on the MySQL / PostgreSQL workbench
+✨ And start with the querying project on the database:
+  [Download the SQL script here](import-data.sql)
+```
 
 ---
 
