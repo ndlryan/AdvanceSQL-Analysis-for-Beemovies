@@ -28,12 +28,12 @@ This repository contains the complete SQL script with 25+ queries used to analyz
 
 ## Database setup
 
-Set-up your database
+📝Set-up your database
+  - You can run this script to load the data on the MySQL / PostgreSQL workbench
+  - And start with the querying project on the database
 
 ```Markdown
-✨ You can run this script to load the data on the MySQL / PostgreSQL workbench
-✨ And start with the querying project on the database:
-  [Download the SQL script here](import-data.sql)
+[Download the SQL script here](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/import-data.sql)
 ```
 
 ---
