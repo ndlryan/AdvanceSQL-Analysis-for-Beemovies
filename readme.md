@@ -8,9 +8,12 @@
 ## DBT Overview
 
 SQL Movie Database Analysis 🎬
-This project is a deep dive into a comprehensive movie database, utilizing a wide range of SQL techniques to answer complex business questions. The analysis moves from basic data cleaning and exploration to advanced window functions, multi-level aggregations, and performance analysis.
 
-This repository contains the complete SQL script with 25+ queries used to analyze the dataset.
+Bee Movies is an Indian film production company which has produced many super-hit movies. They have usually released movies for the Indian audience but for their next project, they are planning to release a movie for the global audience in 2022.
+
+The production company wants to plan their every move analytically based on data and have approached you for help with this new project.
+
+You have to use SQL to analyse the given data and give recommendations to Bee Movies based on the insights
 
 ---
 
@@ -28,25 +31,34 @@ This repository contains the complete SQL script with 25+ queries used to analyz
 
 ## Database setup
 
-📝 Set-up your DBT
+### 📝 Set-up your DBT
   - You can run this script to load the data on the MySQL / PostgreSQL workbench
   - And start with the querying project on the database
 [Get Data!](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/import-data.sql)
 
-✨ Know your DBT
+### ✨ Know your DBT
   - This file contains the ERD diagram to help you understand the relationship between those tables
   - Study the ERD closely so that you get an initial understanding of the relations and how data from different tables can be joined.
 [Get ERD!](https://github.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/raw/main/ERD.xlsx)
 
+### 🔎 Analyze Your DBT
+  - For your convenience, the entire analytics process has been divided into four segments
+  - The questions in each segment with business objectives are written in the script given below.
+[Get Question!](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/bee-movies-question.sql)
+
 ---
 
 ## 💡 Key SQL Concepts Demonstrated
-This project heavily utilizes modern SQL features to solve complex, multi-step problems.
-- Common Table Expressions (CTEs)
-- Window Functions (Analytics): ROW_NUMBER(), RANK(), and DENSE_RANK(), PARTITION BY, LAG(), running totals and moving averages.
-- Advanced Aggregation
-- Data Cleaning Functions
-- Complex Joins
+
+1. Analyzed a movie database using SQL to answer 25+ business questions.
+
+2. Cleaned dirty data (NULLs, non-numeric strings like '$', 'INR ') using REPLACE, CAST, and WHERE IS NOT NULL.
+
+3. Used aggregate functions (COUNT, SUM, AVG) with GROUP BY and HAVING for summaries.
+
+4. Implemented advanced window functions (ROW_NUMBER, RANK, LAG) with PARTITION BY for ranking and time-series analysis.
+
+5. Leveraged CTEs (WITH ... AS) to break down complex, multi-step problems into logical parts.
 
 ---
 
@@ -54,3 +66,5 @@ This project heavily utilizes modern SQL features to solve complex, multi-step p
 
 **Ryan**  
 [GitHub Profile](https://github.com/ndlryan)
+
+This project provided extensive hands-on practice in SQL, moving from basic queries to complex analytical techniques. By cleaning data, joining multiple tables, and applying both aggregate and window functions, we successfully extracted meaningful insights about movie performance, genre trends, and key contributors (directors, actors). The experience highlighted the importance of precise data cleaning and the power of CTEs and window functions for tackling sophisticated, multi-layered business questions.
