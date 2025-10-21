@@ -28,13 +28,15 @@ This repository contains the complete SQL script with 25+ queries used to analyz
 
 ## Database setup
 
-📝Set-up your database
+📝 Set-up your DBT
   - You can run this script to load the data on the MySQL / PostgreSQL workbench
   - And start with the querying project on the database
+[Get Data!](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/import-data.sql)
 
-```Markdown
-[Download the SQL script here](https://raw.githubusercontent.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/refs/heads/main/import-data.sql)
-```
+✨ Know your DBT
+  - This file contains the ERD diagram to help you understand the relationship between those tables
+  - Study the ERD closely so that you get an initial understanding of the relations and how data from different tables can be joined.
+[Click to Download]
 
 ---
 
