@@ -36,7 +36,7 @@ This repository contains the complete SQL script with 25+ queries used to analyz
 ✨ Know your DBT
   - This file contains the ERD diagram to help you understand the relationship between those tables
   - Study the ERD closely so that you get an initial understanding of the relations and how data from different tables can be joined.
-[Click to Download]
+[Get ERD!](https://github.com/ndlryan/AdvanceSQL-Analysis-for-Beemovies/raw/main/ERD.xlsx)
 
 ---
 
