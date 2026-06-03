@@ -470,55 +470,31 @@ ORDER BY year DESC, movie_rank;
 -- Q26.1: Which are the five highest-grossing movies of each year that belong to the top three genres? 
         (Note: The top 3 genres would have the most number of movies.)
 
-WITH TOP_GENRES AS
-(
-SELECT 
-	g.genre,
-	COUNT(m.id) AS movie_count
-FROM movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-GROUP BY g.genre
-ORDER BY COUNT(m.id) DESC
-LIMIT 3
-),
-
-TOP_MOVIES AS
-(
-SELECT 
-	STRING_AGG(g.genre, ', ') AS genre,
-	m.year,
-	title,
-	
-	CAST(
-	 REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT
-	)AS world_grossing,
-	
-	ROW_NUMBER () OVER (
-	PARTITION BY m.year
-	ORDER BY 
-	CAST(
-	 REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT
-	    )DESC) AS movie_rank
-	
-FROM movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-WHERE m.worlwide_gross_income IS NOT NULL
-AND g.genre IN 
-				(SELECT genre FROM TOP_GENRES)
-GROUP BY m.id,
-	 	 m.title,
-		 m.year,
-		 m.worlwide_gross_income
+WITH TOP_MOVIES AS (
+    SELECT 
+        m.id, m.title, m.year, m.worlwide_gross_income,
+        DENSE_RANK() OVER (
+            PARTITION BY m.year
+            ORDER BY CAST(REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT) DESC
+        ) AS movie_rank
+    FROM movie AS m
+    JOIN genre AS g ON m.id = g.movie_id
+    WHERE m.worlwide_gross_income IS NOT NULL
+      AND g.genre IN (
+          SELECT genre FROM genre 
+          GROUP BY genre ORDER BY COUNT(movie_id) DESC LIMIT 3
+      )
 )
-
 SELECT
-	genre,
-	year,
-	title,
-	world_grossing
-FROM TOP_MOVIES
-WHERE movie_rank <= 5
-ORDER BY year DESC, movie_rank;
+    STRING_AGG(DISTINCT g.genre, ', ') AS genre,
+    tm.year,
+    tm.title,
+    CAST(REPLACE(REPLACE(tm.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT) AS world_grossing
+FROM TOP_MOVIES AS tm
+JOIN genre AS g ON tm.id = g.movie_id
+WHERE tm.movie_rank <= 5
+GROUP BY tm.id, tm.title, tm.year, tm.worlwide_gross_income, tm.movie_rank
+ORDER BY tm.year DESC, tm.movie_rank;
 
 -- -----------------------------------------------------------------------------
 
