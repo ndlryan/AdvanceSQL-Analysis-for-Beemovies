@@ -543,11 +543,11 @@ LIMIT 2;
 -- Q28: Who are the top 3 actresses based on number of Super Hit movies (average rating >8) in drama genre
 
 SELECT
-n.name AS actress_name,
-SUM(r.total_votes) as total_votes,
-COUNT(m.id) AS movie_count,
-ROUND(SUM(r.avg_rating * r.total_votes) / SUM(r.total_votes), 2) AS actress_rating,
-ROW_NUMBER() OVER(ORDER BY COUNT(m.id) DESC) AS actress_rank
+	n.name AS actress_name,
+	SUM(r.total_votes) as total_votes,
+	COUNT(m.id) AS movie_count,
+	ROUND(SUM(r.avg_rating * r.total_votes) / SUM(r.total_votes), 2) AS actress_rating,
+	ROW_NUMBER() OVER(ORDER BY COUNT(m.id) DESC) AS actress_rank
 FROM movie AS m
 JOIN ratings AS r ON m.id = r.movie_id
 JOIN role_mapping AS rm ON m.id = rm.movie_id
@@ -564,55 +564,35 @@ LIMIT 3;
 
 -- Q29: Get the following details for top 9 directors (based on number of movies)
 
-WITH DIRECTOR_STATS AS(
-SELECT
-n.id AS director_id,
-n.name AS director_name,
-COUNT(m.id) AS movie_count,
-ROUND(SUM(r.avg_rating * r.total_votes) / SUM(r.total_votes), 2) AS avg_movie_rating,
-SUM(r.total_votes) AS total_votes,
-MIN(avg_rating) AS min_rating,
-MAX(avg_rating) AS max_rating,
-SUM(m.duration) AS total_movie_duration,
-ROW_NUMBER() OVER(ORDER BY COUNT(m.id) DESC) as director_rank
-FROM movie AS m 
-JOIN ratings AS r ON m.id = r.movie_id
-JOIN director_mapping AS dm ON m.id = dm.movie_id
-JOIN names AS n ON dm.name_id = n.id
-GROUP BY n.id, n.name
-),
-
-AVG_INTER AS(
-SELECT
-director_id,
-ROUND(AVG(gap_days),2) AS avg_inter_movies_days
-FROM(
-SELECT 
-dm.name_id as director_id,
-m.date_published,
-LAG(m.date_published, 1) OVER (PARTITION BY dm.name_id ORDER BY m.date_published) AS last_released_date,
-(m.date_published - LAG(m.date_published, 1) OVER (PARTITION BY dm.name_id ORDER BY m.date_published)) AS gap_days
-FROM movie AS m
-JOIN director_mapping AS dm ON m.id = dm.movie_id
-WHERE m.date_published IS NOT NULL
-) AS MovieGaps
-WHERE gap_days IS NOT NULL
-GROUP BY director_id
+WITH MOVIE_GAPS AS (
+    SELECT 
+        dm.name_id AS director_id,
+        n.name AS director_name,
+        r.avg_rating,
+        r.total_votes,
+        m.duration,
+        m.date_published - LAG(m.date_published) OVER (
+            PARTITION BY dm.name_id 
+            ORDER BY m.date_published
+        ) AS gap_days
+    FROM movie AS m
+    JOIN ratings AS r ON m.id = r.movie_id
+    JOIN director_mapping AS dm ON m.id = dm.movie_id
+    JOIN names AS n ON dm.name_id = n.id
 )
 
 SELECT
-DS.director_id,
-DS.director_name,
-DS.movie_count AS number_of_movies,
-AI.avg_inter_movies_days,
-DS.avg_movie_rating,
-DS.total_votes,
-DS.min_rating,
-DS.max_rating,
-DS.total_movie_duration
-FROM DIRECTOR_STATS as DS
-LEFT JOIN AVG_INTER as AI ON DS.director_id = AI.director_id
-ORDER BY DS.director_rank
+    director_id,
+    director_name,
+    COUNT(*) AS number_of_movies,
+    ROUND(AVG(gap_days), 2) AS avg_inter_movies_days,
+    ROUND(CAST(AVG(avg_rating) AS NUMERIC), 2) AS avg_movie_rating, 
+    MIN(avg_rating) AS min_rating,
+    MAX(avg_rating) AS max_rating,
+    SUM(duration) AS total_movie_duration
+FROM MOVIE_GAPS
+GROUP BY director_id, director_name
+ORDER BY number_of_movies DESC
 LIMIT 9;
 
 -- -----------------------------------------------------------------------------
