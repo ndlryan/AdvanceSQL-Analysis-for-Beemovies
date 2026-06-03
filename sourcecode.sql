@@ -470,10 +470,11 @@ ORDER BY year DESC, movie_rank;
 -- Q26.1: Which are the five highest-grossing movies of each year that belong to the top three genres? 
         (Note: The top 3 genres would have the most number of movies.)
 
-WITH TOP_GENRES AS(
+WITH TOP_GENRES AS
+(
 SELECT 
-g.genre,
-COUNT(m.id) AS movie_count
+	g.genre,
+	COUNT(m.id) AS movie_count
 FROM movie AS m
 JOIN genre AS g ON m.id = g.movie_id
 GROUP BY g.genre
@@ -481,25 +482,40 @@ ORDER BY COUNT(m.id) DESC
 LIMIT 3
 ),
 
-TOP_MOVIES AS(
+TOP_MOVIES AS
+(
 SELECT 
-g.genre,
-m.year,
-title,	
-CAST(REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT)AS world_grossing,
-ROW_NUMBER () OVER (PARTITION BY m.year ORDER BY CAST( REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR','') AS BIGINT) DESC) AS movie_rank
+	STRING_AGG(g.genre, ', ') AS genre,
+	m.year,
+	title,
+	
+	CAST(
+	 REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT
+	)AS world_grossing,
+	
+	ROW_NUMBER () OVER (
+	PARTITION BY m.year
+	ORDER BY 
+	CAST(
+	 REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT
+	    )DESC) AS movie_rank
+	
 FROM movie AS m
 JOIN genre AS g ON m.id = g.movie_id
 WHERE m.worlwide_gross_income IS NOT NULL
-AND g.genre IN (SELECT genre FROM TOP_GENRES)
-GROUP BY m.id, m.title, m.year, g.genre, m.worlwide_gross_income
+AND g.genre IN 
+				(SELECT genre FROM TOP_GENRES)
+GROUP BY m.id,
+	 	 m.title,
+		 m.year,
+		 m.worlwide_gross_income
 )
 
-SELECT 
-genre,
-year,
-title,
-world_grossing
+SELECT
+	genre,
+	year,
+	title,
+	world_grossing
 FROM TOP_MOVIES
 WHERE movie_rank <= 5
 ORDER BY year DESC, movie_rank;
