@@ -520,64 +520,22 @@ FROM TOP_MOVIES
 WHERE movie_rank <= 5
 ORDER BY year DESC, movie_rank;
 
--- Q26.2: find out the names of the top two production houses that have produced the highest number of hits among multilingual movies.
-
-WITH TOP_GENRES AS(
-SELECT 
-g.genre,
-COUNT(m.id) AS movie_count
-FROM movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-GROUP BY g.genre
-ORDER BY COUNT(m.id) DESC
-LIMIT 3
-),
-
-TOP_MOVIES AS(
-SELECT 
-m.production_company,
-m.languages,
-m.id,
-ROW_NUMBER () OVER (PARTITION BY m.year ORDER BY CAST(REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 
-'INR ','') AS BIGINT)DESC) AS movie_rank
-FROM movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-WHERE m.worlwide_gross_income IS NOT NULL
-AND g.genre IN (SELECT genre FROM TOP_GENRES)
-GROUP BY m.id, m.title, m.year, g.genre, m.worlwide_gross_income, m.production_company, m.languages
-),
-
-MULTILINGUAL_HIT AS(
-SELECT production_company
-FROM TOP_MOVIES
-WHERE movie_rank <=5
-AND production_company IS NOT NULL
-AND languages LIKE '%,%'
-)
-
-SELECT 
-production_company,
-COUNT(production_company) as hit_count
-FROM MULTILINGUAL_HIT
-GROUP BY production_company
-ORDER BY hit_count DESC
-LIMIT 2;
-
 -- -----------------------------------------------------------------------------
 
 -- Q27: Which are the top two production houses that have produced the highest number of hits (median rating >= 8) among multilingual movies?
 
 SELECT 
-m.production_company AS prod_comp,
-COUNT(m.id) AS movie_count,
-ROW_NUMBER() OVER(ORDER BY COUNT(m.id) DESC) AS prod_comp_rank
+	m.production_company as prod_comp,
+	COUNT(m.id) AS movie_count,
+	ROW_NUMBER() OVER(
+	ORDER BY COUNT(m.id) DESC) AS prod_comp_rank
 FROM movie AS m 
 JOIN ratings AS r ON m.id = r.movie_id
 WHERE r.median_rating >= 8 
 AND m.languages LIKE '%,%'
 AND m.production_company IS NOT NULL
 GROUP BY m.production_company
-ORDER BY movie_count DESC, prod_comp_rank ASC
+ORDER BY movie_count DESC
 LIMIT 2;
 
 -- -----------------------------------------------------------------------------
