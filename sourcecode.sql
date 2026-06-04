@@ -433,34 +433,28 @@ ORDER BY genre;
 
 -- Q25.2: What is the genre-wise running total and moving average of the average movie duration?
 
-WITH TOP_GENRE AS(
-SELECT 
-g.genre,
-COUNT(m.id) AS movie_count
-FROM movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-JOIN ratings AS r ON g.movie_id = r.movie_id
-WHERE avg_rating > 8
-GROUP BY g.genre
-ORDER BY movie_count DESC
-LIMIT 3
-),
-  
-MOVIE_RANK AS(
-SELECT
-m.title,
-m.year,
-g.genre,
-r.avg_rating,
-ROW_NUMBER() OVER (PARTITION BY m.year  ORDER BY r.avg_rating DESC ) AS movie_rank
-FROM
-movie AS m
-JOIN genre AS g ON m.id = g.movie_id
-JOIN ratings AS r ON m.id = r.movie_id
-WHERE g.genre IN (SELECT genre FROM TOP_GENRE)
+WITH MOVIE_RANK AS (
+    SELECT
+        m.title, m.year, r.avg_rating,
+        STRING_AGG(g.genre, ', ') AS genre,
+        ROW_NUMBER() OVER (PARTITION BY m.year ORDER BY r.avg_rating DESC) AS movie_rank
+    FROM movie AS m
+    JOIN genre AS g ON m.id = g.movie_id
+    JOIN ratings AS r ON m.id = r.movie_id
+	WHERE m.id IN (
+        SELECT sub_g.movie_id
+        FROM genre AS sub_g
+        WHERE sub_g.genre IN (
+            SELECT sg.genre FROM genre sg 
+            JOIN ratings sr ON sg.movie_id = sr.movie_id
+            WHERE sr.avg_rating > 8 
+            GROUP BY sg.genre ORDER BY COUNT(sg.movie_id) DESC LIMIT 3
+        )
+    )
+    GROUP BY m.id, m.title, m.year, r.avg_rating
 )
-  
-SELECT *
+
+SELECT title, year, genre, avg_rating, movie_rank
 FROM MOVIE_RANK
 WHERE movie_rank <= 5
 ORDER BY year DESC, movie_rank;
@@ -473,6 +467,7 @@ ORDER BY year DESC, movie_rank;
 WITH TOP_MOVIES AS (
     SELECT 
         m.id, m.title, m.year, m.worlwide_gross_income,
+        CAST(REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT) AS world_grossing,
         DENSE_RANK() OVER (
             PARTITION BY m.year
             ORDER BY CAST(REPLACE(REPLACE(m.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT) DESC
@@ -489,11 +484,11 @@ SELECT
     STRING_AGG(DISTINCT g.genre, ', ') AS genre,
     tm.year,
     tm.title,
-    CAST(REPLACE(REPLACE(tm.worlwide_gross_income, '$', ''), 'INR ', '') AS BIGINT) AS world_grossing
+    tm.world_grossing
 FROM TOP_MOVIES AS tm
 JOIN genre AS g ON tm.id = g.movie_id
 WHERE tm.movie_rank <= 5
-GROUP BY tm.id, tm.title, tm.year, tm.worlwide_gross_income, tm.movie_rank
+GROUP BY tm.id, tm.title, tm.year, tm.world_grossing, tm.movie_rank
 ORDER BY tm.year DESC, tm.movie_rank;
 
 -- -----------------------------------------------------------------------------
